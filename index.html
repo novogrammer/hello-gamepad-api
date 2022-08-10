@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <div class="input"></div>
+    <script>
+      const gamepadList=[];
+      const inputElement=document.querySelector(".input");
+
+
+      function updateGamepadList(){
+        const newGamepadList=navigator.getGamepads();
+        for(let newGamepad of newGamepadList){
+          if(newGamepad && newGamepad.index in gamepadList){
+            gamepadList[newGamepad.index]=newGamepad;
+          }
+        }
+      }
+
+      function onGamepadconnected(event) {
+        console.log("onGamepadconnected");
+        const {gamepad}=event;
+        const gamepadElement=document.createElement("div");
+        gamepadElement.classList.add("input__gamepad");
+        gamepadElement.dataset.index=gamepad.index;
+        inputElement.appendChild(gamepadElement);
+        gamepadList[gamepad.index]=gamepad;
+        
+      }
+      function onGamepaddisconnected(event){
+        console.log("onGamepaddisconnected");
+        const {gamepad}=event;
+        delete gamepadList[gamepad.index];
+        const gamePadElement=document.querySelector(`.input__gamepad[data-index='${gamepad.index}']`);
+        if(gamePadElement){
+          inputElement.removeChild(gamePadElement);
+        }
+      }
+      window.addEventListener("gamepadconnected", onGamepadconnected);
+      window.addEventListener("gamepaddisconnected", onGamepaddisconnected);
+
+      function updateInputInformation(){
+        for(let gamepad of gamepadList){
+          const gamePadElement=document.querySelector(`.input__gamepad[data-index='${gamepad.index}']`);
+          if(!gamePadElement){
+            throw new Error("gamePadElement is null");
+          }
+
+          let json={};
+          if(gamepad){
+            json["buttons"]=gamepad.buttons.map((button)=>({
+              value:button.value,
+              pressed:button.pressed,
+            }));
+            json["axes"]=gamepad.axes;
+          }else{
+            console.log("gamepad is null")
+          }
+          gamePadElement.textContent=JSON.stringify(json);
+        }
+      }
+
+      function onTick(){
+        // console.log("onTick()");
+        updateGamepadList();
+        updateInputInformation();
+        requestAnimationFrame(onTick);
+      }
+      requestAnimationFrame(onTick);
+    </script>
+  </body>
+</html>
