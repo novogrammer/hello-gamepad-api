@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Hello Gamepad API</title>
   </head>
   <body>
+    <h1>Hello Gamepad API</h1>
     <div class="input"></div>
     <script>
       const gamepadList=[];
@@ -18,8 +20,8 @@
         }
       }
 
-      function onGamepadconnected(event) {
-        console.log("onGamepadconnected");
+      function onGamepadConnected(event) {
+        console.log("onGamepadConnected");
         const {gamepad}=event;
         const gamepadElement=document.createElement("div");
         gamepadElement.classList.add("input__gamepad");
@@ -28,8 +30,8 @@
         gamepadList[gamepad.index]=gamepad;
         
       }
-      function onGamepaddisconnected(event){
-        console.log("onGamepaddisconnected");
+      function onGamepadDisconnected(event){
+        console.log("onGamepadDisconnected");
         const {gamepad}=event;
         delete gamepadList[gamepad.index];
         const gamePadElement=document.querySelector(`.input__gamepad[data-index='${gamepad.index}']`);
@@ -37,8 +39,8 @@
           inputElement.removeChild(gamePadElement);
         }
       }
-      window.addEventListener("gamepadconnected", onGamepadconnected);
-      window.addEventListener("gamepaddisconnected", onGamepaddisconnected);
+      window.addEventListener("gamepadconnected", onGamepadConnected);
+      window.addEventListener("gamepaddisconnected", onGamepadDisconnected);
 
       function updateInputInformation(){
         for(let gamepad of gamepadList){
